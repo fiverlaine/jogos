@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { joinMemoryGame } from "@/lib/memory-supabase";
+import { joinMemoryGame } from "@/lib/memory-game/memorygameservice";
 
 export async function POST(
   request: Request,
@@ -18,13 +18,10 @@ export async function POST(
     }
 
     // Entrar no jogo
-    const success = await joinMemoryGame(gameId, {
-      id: player_2_id,
-      nickname: player_2_nickname,
-    });
+    const game = await joinMemoryGame(gameId, player_2_id, player_2_nickname);
 
-    if (success) {
-      return NextResponse.json({ success: true });
+    if (game) {
+      return NextResponse.json({ success: true, game });
     } else {
       return NextResponse.json(
         { error: "Não foi possível entrar no jogo" },
