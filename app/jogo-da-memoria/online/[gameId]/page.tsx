@@ -14,6 +14,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { generateUUID } from '@/lib/utils';
 
+// Importar os estilos responsivos para dispositivos móveis
+import "@/app/mobile-memory-game.css";
+
 interface GamePageProps {
   params: {
     gameId: string;
@@ -228,7 +231,11 @@ export default function GamePage({ params }: GamePageProps) {
     
     // Exibir o jogo
     if (game) {
-      return <OnlineMemoryGame initialGame={game} onGameUpdate={handleGameUpdate} />;
+      return (
+        <div className="w-full overflow-hidden memory-game-wrapper">
+          <OnlineMemoryGame initialGame={game} onGameUpdate={handleGameUpdate} />
+        </div>
+      );
     }
     
     // Fallback (não deveria acontecer)
@@ -257,8 +264,9 @@ export default function GamePage({ params }: GamePageProps) {
           alt="Background"
           fill
           className="object-cover object-center opacity-10"
-          unoptimized
           priority
+          quality={75}
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-purple-950/80 to-slate-900/80"></div>
       </div>

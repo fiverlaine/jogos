@@ -1,0 +1,425 @@
+/* Estilos responsivos para jogo da memória em dispositivos móveis */
+
+/* Container principal do jogo da memória */
+.memory-game-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Container para cada carta individual */
+.memory-card-wrapper {
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  position: relative;
+}
+
+/* Ajustes globais para melhor responsividade */
+.memory-game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.5rem;
+}
+
+/* Contêiner do grid de cartas */
+.memory-cards-grid {
+  display: grid;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(auto, 1fr));
+  gap: 8px;
+  padding: 0 8px;
+}
+
+/* Card do jogo da memória - Estilos Básicos */
+.memory-card {
+  perspective: 1000px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1/1;
+}
+
+/* Estilos universais para o efeito de flip das cartas */
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 0.75rem;
+}
+
+.card-face.card-front {
+  z-index: 2;
+}
+
+.card-face.card-back {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-inner.matched {
+  transform: rotateY(180deg);
+}
+
+.card-icon {
+  width: 70%;
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Ajustes específicos para dispositivos móveis pequenos (menor que 440px) */
+@media (max-width: 440px) {
+  .memory-game-container {
+    padding: 0.25rem;
+  }
+  
+  .memory-cards-grid {
+    gap: 4px !important;
+    width: calc(100% - 8px);
+    margin: 0 auto;
+  }
+  
+  /* Ajustes específicos para configurações de grid */
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+  
+  .grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 3px !important;
+  }
+  
+  .memory-card {
+    transform: scale(1);
+    width: 100% !important;
+    height: 0 !important;
+    padding-bottom: 100% !important;
+    position: relative;
+  }
+  
+  .card-inner {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: transform 0.4s !important;
+  }
+  
+  .card-face {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 0.5rem !important;
+  }
+  
+  /* Garantir que os ícones sejam visíveis */
+  .card-icon {
+    transform: translateZ(1px) !important;
+    width: 60% !important;
+    height: 60% !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 60% !important;
+    max-height: 60% !important;
+  }
+  
+  /* Ajustar tamanhos do texto */
+  .text-xs {
+    font-size: 0.7rem !important;
+  }
+  
+  .text-sm {
+    font-size: 0.8rem !important;
+  }
+  
+  /* Ajustar bordas e espaçamentos */
+  .rounded-xl {
+    border-radius: 0.5rem !important;
+  }
+  
+  /* Diminuir padding em containers */
+  .p-4, .p-5, .p-6 {
+    padding: 0.75rem !important;
+  }
+  
+  .gap-4 {
+    gap: 0.5rem !important;
+  }
+  
+  /* Tamanho específico para as interrogações */
+  .card-face.card-front .text-4xl {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Ajustes para dispositivos móveis médios (440px - 640px) */
+@media (min-width: 441px) and (max-width: 640px) {
+  .memory-cards-grid {
+    gap: 6px !important;
+    width: calc(100% - 16px);
+    margin: 0 auto;
+  }
+  
+  /* Ajustes específicos para configurações de grid */
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+  
+  .grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+  }
+  
+  .memory-card {
+    width: 100% !important;
+    height: 0 !important;
+    padding-bottom: 100% !important;
+    position: relative;
+  }
+  
+  .card-inner {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  /* Diminuir o padding para economizar espaço */
+  .card-face.card-back {
+    padding: 0.35rem !important;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+/* Ajustes gerais para dispositivos móveis */
+@media (max-width: 640px) {
+  /* Ajustar espaçamento no grid para melhor visualização */
+  .memory-cards-grid {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 4px;
+  }
+  
+  /* Minimizar efeitos de hover em dispositivos móveis */
+  .card-inner:hover {
+    transform: none !important;
+  }
+  
+  /* Ajustar tamanho dos ícones nas cartas */
+  .card-icon {
+    transform: scale(0.95) translateZ(1px) !important;
+  }
+  
+  /* Simplificar animações para melhor performance */
+  .animate-pulse {
+    animation-duration: 3s !important;
+  }
+  
+  /* Melhorar layout do placar */
+  .scoreboard-container {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .status-message {
+    text-align: center !important;
+    font-size: 0.85rem !important;
+  }
+  
+  /* Remover dimensões fixas e usar dimensões relativas */
+  .w-\[65px\], .w-\[60px\], .w-\[55px\], .w-\[50px\], .w-\[45px\], .w-\[40px\],
+  .h-\[65px\], .h-\[60px\], .h-\[55px\], .h-\[50px\], .h-\[45px\], .h-\[40px\] {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1/1 !important;
+  }
+}
+
+/* Correções para problemas de perspectiva em dispositivos móveis */
+@media (max-width: 768px) {
+  .perspective-1000 {
+    perspective: 500px !important;
+  }
+  
+  /* Melhorar visibilidade de cartas viradas em telas pequenas */
+  .card-inner.flipped, .card-inner.matched {
+    transform: rotateY(180deg) scale(0.98) !important;
+  }
+  
+  /* Ajustes para melhorar performance em dispositivos móveis */
+  .card-inner {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  /* Ajustes específicos para grids grandes */
+  .grid-rows-6 {
+    grid-template-rows: repeat(6, minmax(0, 1fr)) !important;
+  }
+  
+  .grid-rows-4 {
+    grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Correções para telas maiores */
+@media (min-width: 641px) {
+  .memory-cards-grid {
+    gap: 12px;
+    max-width: 800px;
+  }
+  
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+  
+  .grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+  
+  .memory-card-wrapper {
+    padding-bottom: 100%;
+  }
+  
+  .memory-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    perspective: 1000px;
+  }
+  
+  .card-inner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+  }
+  
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 0.75rem;
+  }
+  
+  .card-face.card-front {
+    z-index: 2;
+    background-color: #8459b4;
+  }
+  
+  .card-face.card-back {
+    transform: rotateY(180deg);
+    z-index: 1;
+  }
+  
+  .card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+  
+  .card-icon {
+    width: 70%;
+    height: 70%;
+  }
+}
+
+/* Definições específicas para problemas de Safari em iOS */
+@supports (-webkit-touch-callout: none) {
+  .card-face.card-back {
+    transform: rotateY(180deg) translateZ(1px);
+  }
+  
+  .card-icon {
+    transform: translateZ(2px) !important;
+  }
+}
+
+/* Ajustes específicos para dispositivos móveis muito pequenos (menor que 350px) */
+@media (max-width: 350px) {
+  .memory-cards-grid {
+    gap: 3px !important;
+    padding: 0 2px !important;
+  }
+  
+  .card-icon {
+    width: 50% !important;
+    height: 50% !important;
+    min-width: 12px !important;
+    min-height: 12px !important;
+  }
+  
+  .card-face.card-front .text-4xl {
+    font-size: 1.2rem !important;
+  }
+  
+  .rounded-xl {
+    border-radius: 0.4rem !important;
+  }
+  
+  .memory-card-wrapper {
+    padding-bottom: 95% !important;
+  }
+
+  .scoreboard-container {
+    font-size: 0.7rem !important;
+  }
+
+  /* Ajuste específico para configurações de grid 4x6 e 6x6 */
+  .grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+  }
+} 

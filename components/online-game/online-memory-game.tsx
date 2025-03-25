@@ -23,7 +23,15 @@ import { Heart, Medal, RotateCcw, Trophy, AlertCircle, Clock, Users,
   Lock, 
   Crown, 
   Diamond,
-  Loader2
+  Loader2,
+  Link2,
+  RefreshCw,
+  ArrowLeft,
+  Hand,
+  Scale,
+  X,
+  Check,
+  HourglassIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -76,12 +84,15 @@ const allIconComponents: Record<string, React.ComponentType<any>> = {
 export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGameProps) {
   const router = useRouter();
   const { player } = usePlayer();
+  const [isAudioInitialized, setIsAudioInitialized] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [game, setGame] = useState<MemoryGameSession>(initialGame);
   const [isRematchModalOpen, setIsRematchModalOpen] = useState(false);
   const [rematchGameId, setRematchGameId] = useState<string | null>(null);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [waitingForReset, setWaitingForReset] = useState(false);
   const [isRequestingRematch, setIsRequestingRematch] = useState(false);
+  const [isAcceptingRematch, setIsAcceptingRematch] = useState(false);
   const [isReceivingRematch, setIsReceivingRematch] = useState(false);
   const [gameTime, setGameTime] = useState(0);
   const [gameEnded, setGameEnded] = useState(false);
@@ -149,17 +160,15 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
   }, []);
   
   // Função para reproduzir som com tratamento de erro
-  const playSound = (audioRef: React.RefObject<HTMLAudioElement>) => {
+  const playSound = (audioRef: React.RefObject<HTMLAudioElement | null>) => {
     try {
-      if (audioRef.current) {
-        // Reiniciar o áudio para poder reproduzir novamente
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => {
-          // Silenciado para melhor experiência
-        });
+      if (audioRef.current && !isMuted) {
+        const sound = audioRef.current;
+        sound.currentTime = 0;
+        sound.play().catch(e => console.warn('Sound play failed:', e));
       }
     } catch (error) {
-      // Silenciar erros de áudio para não atrapalhar a experiência
+      console.warn('Error playing sound:', error);
     }
   };
 
@@ -1093,24 +1102,45 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
   const getCardSize = () => {
     const { rows, cols } = game.grid_config;
     
-    if (rows === 3 && cols === 4) return 'h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32';
-    if (rows === 4 && cols === 4) return 'h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28';
-    if (rows === 4 && cols === 6) return 'h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24';
-    if (rows === 6 && cols === 6) return 'h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20';
+    // Tamanhos baseados na versão offline, com ajustes para mais dispositivos
+    if (rows === 3 && cols === 4) {
+      // 3x4 - Fácil
+      return "w-[65px] h-[65px] xs:w-[70px] xs:h-[70px] sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24";
+    } else if (rows === 4 && cols === 4) {
+      // 4x4 - Médio
+      return "w-[60px] h-[60px] xs:w-[65px] xs:h-[65px] sm:w-[70px] sm:h-[70px] md:w-[80px] md:h-[80px] lg:w-22 lg:h-22";
+    } else if (rows === 4 && cols === 6) {
+      // 4x6 - Difícil
+      return "w-[50px] h-[50px] xs:w-[55px] xs:h-[55px] sm:w-[60px] sm:h-[60px] md:w-[70px] md:h-[70px] lg:w-20 lg:h-20";
+    } else if (rows === 6 && cols === 6) {
+      // 6x6 - Expert
+      return "w-[40px] h-[40px] xs:w-[45px] xs:h-[45px] sm:w-[50px] sm:h-[50px] md:w-[60px] md:h-[60px] lg:w-16 lg:h-16";
+    }
     
-    return 'h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28';
+    // Tamanho padrão para qualquer outra configuração
+    return "w-[60px] h-[60px] xs:w-16 xs:h-16 sm:w-[70px] sm:h-[70px] md:w-20 md:h-20 lg:w-24 lg:h-24";
   };
   
   // Função para determinar o tamanho do ícone baseado no grid
   const getIconSize = () => {
     const { rows, cols } = game.grid_config;
     
-    if (rows === 3 && cols === 4) return 'h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16';
-    if (rows === 4 && cols === 4) return 'h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14';
-    if (rows === 4 && cols === 6) return 'h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12';
-    if (rows === 6 && cols === 6) return 'h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10';
+    if (rows === 3 && cols === 4) {
+      // 3x4 - Fácil
+      return "w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14";
+    } else if (rows === 4 && cols === 4) {
+      // 4x4 - Médio
+      return "w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12";
+    } else if (rows === 4 && cols === 6) {
+      // 4x6 - Difícil
+      return "w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9";
+    } else if (rows === 6 && cols === 6) {
+      // 6x6 - Expert
+      return "w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8";
+    }
     
-    return 'h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14';
+    // Tamanho padrão para qualquer outra configuração
+    return "w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10";
   };
   
   // Renderiza as cartas do jogo
@@ -1118,7 +1148,11 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
     const cardSize = getCardSize();
     const { rows, cols } = game.grid_config;
     
-    const customGridClass = `grid gap-2 md:gap-3 grid-cols-${cols}`;
+    // Definir a classe de grid com base no número de colunas
+    const getGridClass = () => {
+      // Classes adaptadas para dispositivos móveis
+      return `memory-cards-grid grid-cols-${cols} xs:grid-cols-${cols} sm:grid-cols-${cols} md:grid-cols-${cols}`;
+    };
     
     // Verificar se todas as cartas estão prontas para renderização
     const isCardsReady = game.cards && game.cards.every(card => card != null);
@@ -1130,7 +1164,7 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
     }
     
     return (
-      <div className={`w-full max-w-4xl mx-auto ${cols <= 4 ? customGridClass : `grid grid-cols-${cols} gap-2`}`}>
+      <div className={getGridClass()}>
         {game.cards.map((card, index) => {
           const isMatched = card.isMatched;
           // Usamos diretamente o estado do servidor para determinar se a carta está virada
@@ -1153,31 +1187,31 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
           }
           
           return (
-            <motion.div
-              key={`card-${index}-${card.iconName || 'undefined'}`}
-              className={`relative ${cardSize} rounded-xl ${isClickable ? 'cursor-pointer hover:brightness-110' : 'cursor-not-allowed'} ${borderColorClass}`}
-              onClick={() => isClickable && handleCardClick(index)}
-              whileTap={{ scale: isClickable ? 0.95 : 1 }}
-              whileHover={{ scale: isClickable ? 1.03 : 1 }}
-              initial={{ scale: 1 }}
-              title={!isClickable && isFlipped ? "Esta carta já está virada" : (
-                !isClickable && isMatched ? "Esta carta já foi combinada" : (
-                  !isClickable && !isCurrentPlayer ? "Não é sua vez de jogar" : 
-                    isClickable ? "Clique para virar esta carta" : "Aguarde..."
-                )
-              )}
-            >
-              <div 
-                className={`card-inner ${isFlipped ? 'flipped' : ''} ${isMatched ? 'matched' : ''} ${cooldownActive && !isFlipped && !isMatched ? 'cooldown' : ''}`}
+            <div className="memory-card-wrapper" key={`wrapper-${index}`}>
+              <motion.div
+                key={`card-${index}-${card.iconName || 'undefined'}`}
+                className={`absolute inset-0 memory-card perspective-1000 rounded-xl ${isClickable ? 'cursor-pointer hover:brightness-110' : 'cursor-not-allowed'} ${borderColorClass}`}
+                onClick={() => isClickable && handleCardClick(index)}
+                whileTap={{ scale: isClickable ? 0.95 : 1 }}
+                whileHover={{ scale: isClickable ? 1.03 : 1 }}
+                initial={{ scale: 1 }}
+                title={!isClickable && isFlipped ? "Esta carta já está virada" : (
+                  !isClickable && isMatched ? "Esta carta já foi combinada" : (
+                    !isClickable && !isCurrentPlayer ? "Não é sua vez de jogar" : 
+                      isClickable ? "Clique para virar esta carta" : "Aguarde..."
+                  )
+                )}
               >
-                <div className="card-face card-front rounded-xl flex items-center justify-center" style={{ backgroundColor: '#8459b4' }}>
-                  <div className="text-4xl font-bold text-purple-200 opacity-20">?</div>
-                </div>
-                <div className={`card-face card-back bg-gradient-to-br from-${card.color || 'indigo'}-600 to-${card.color || 'purple'}-800 shadow-xl rounded-xl flex items-center justify-center p-2`}>
-                  {renderCardIcon(card.iconName, getIconSize(), 'text-white')}
+                <div className={`card-inner ${isFlipped ? 'flipped' : ''} ${isMatched ? 'matched' : ''} ${cooldownActive && !isFlipped && !isMatched ? 'cooldown' : ''}`}>
+                  <div className="card-face card-front rounded-xl flex items-center justify-center">
+                    <div className="text-4xl font-bold text-purple-200 opacity-20">?</div>
+                  </div>
+                  <div className={`card-face card-back bg-gradient-to-br from-${card.color || 'indigo'}-600 to-${card.color || 'purple'}-800 shadow-xl rounded-xl flex items-center justify-center p-2`}>
+                    {renderCardIcon(card.iconName, getIconSize(), 'text-white')}
                   </div>
                 </div>
-            </motion.div>
+              </motion.div>
+            </div>
           );
         })}
       </div>
@@ -1249,48 +1283,42 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
   // Renderiza o placar do jogo
   const renderScoreboard = () => {
     return (
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-3 sm:mb-6">
         <div className="grid grid-cols-3 w-full max-w-xl bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden">
           {/* Jogador 1 */}
-          <div className={`p-3 sm:p-4 flex flex-col items-center ${isPlayer1 && isCurrentPlayer ? 'bg-purple-900/30 border-b-2 border-b-purple-500' : ''}`}>
-            <div className="font-bold text-center text-sm sm:text-base truncate max-w-full">
+          <div className={`p-2 xs:p-3 sm:p-4 flex flex-col items-center ${isPlayer1 && isCurrentPlayer ? 'bg-purple-900/30 border-b-2 border-b-purple-500' : ''}`}>
+            <div className="font-bold text-center text-xs xs:text-sm sm:text-base truncate max-w-full">
               {isPlayer1 ? 'Você' : player1Name}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold">{player1Score}</div>
+            <div className="text-xl xs:text-2xl sm:text-3xl font-bold">{player1Score}</div>
           </div>
           
           {/* Status do Jogo */}
-          <div className="p-3 sm:p-4 flex flex-col items-center justify-center border-l border-r border-slate-700 text-center">
+          <div className="p-2 xs:p-3 sm:p-4 flex flex-col items-center justify-center border-l border-r border-slate-700 text-center">
             {isGameWaiting ? (
-              <div className="text-amber-400 flex items-center text-sm sm:text-base">
-                <Users className="h-4 w-4 mr-1" />
+              <div className="text-amber-400 flex items-center text-xs xs:text-sm sm:text-base">
+                <Users className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
                 Aguardando...
               </div>
             ) : isGameFinished ? (
-              <div className="text-purple-400 flex items-center text-sm sm:text-base">
-                <Trophy className="h-4 w-4 mr-1" />
+              <div className="text-purple-400 flex items-center text-xs xs:text-sm sm:text-base">
+                <Trophy className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
                 Jogo Finalizado
               </div>
             ) : (
-              <div className="text-blue-400 flex items-center text-xs sm:text-sm">
-                <Clock className="h-4 w-4 mr-1" />
+              <div className="text-blue-400 flex items-center text-xs xs:text-sm">
+                <Clock className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
                 {formatTime(gameTime)}
-              </div>
-            )}
-            
-            {isGamePlaying && !isGameFinished && (
-              <div className="text-xs text-slate-400 mt-1">
-                Vez de: {isCurrentPlayer ? 'Você' : opponentNickname}
               </div>
             )}
           </div>
           
           {/* Jogador 2 */}
-          <div className={`p-3 sm:p-4 flex flex-col items-center ${isPlayer2 && isCurrentPlayer ? 'bg-purple-900/30 border-b-2 border-b-purple-500' : ''}`}>
-            <div className="font-bold text-center text-sm sm:text-base truncate max-w-full">
-              {isPlayer2 ? 'Você' : player2Name}
+          <div className={`p-2 xs:p-3 sm:p-4 flex flex-col items-center ${!isPlayer1 && isCurrentPlayer ? 'bg-purple-900/30 border-b-2 border-b-purple-500' : ''}`}>
+            <div className="font-bold text-center text-xs xs:text-sm sm:text-base truncate max-w-full">
+              {!isPlayer1 ? 'Você' : player2Name}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold">{player2Score}</div>
+            <div className="text-xl xs:text-2xl sm:text-3xl font-bold">{player2Score}</div>
           </div>
         </div>
       </div>
@@ -1299,36 +1327,211 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
   
   // Renderiza a mensagem de estado do jogo
   const renderStatusMessage = () => {
+    // Vários estados possíveis com prioridades diferentes
+    
+    // 1. Aguardando segundo jogador
     if (isGameWaiting) {
       return (
-        <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg text-center">
-          <p className="text-amber-300 flex items-center justify-center">
-            <AlertCircle className="h-5 w-5 mr-2" />
-            Aguardando oponente entrar no jogo...
-          </p>
+        <div className="mb-4 md:mb-6 rounded-lg bg-amber-500/10 border border-amber-500/30 p-2 md:p-4">
+          <div className="flex flex-col xs:flex-row items-center gap-2 md:gap-4 justify-between">
+            <div className="flex items-center gap-2 text-amber-400">
+              <Users className="h-5 w-5" />
+              <span className="text-sm xs:text-base">Aguardando segundo jogador</span>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs xs:text-sm bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20 text-amber-400"
+                onClick={() => copyGameLink()}
+              >
+                <Link2 className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
+                Convidar
+              </Button>
+            </div>
+          </div>
         </div>
       );
     }
     
+    // 2. Jogo encerrado
     if (isGameFinished) {
-      // Não mostrar mensagem de status quando o jogo terminou
-      // O resultado será mostrado apenas no modal popup
-      return null;
+      return (
+        <div className={`mb-4 md:mb-6 rounded-lg p-2 md:p-4 ${
+          isWinner 
+            ? 'bg-green-500/10 border border-green-500/30' 
+            : isDraw 
+              ? 'bg-amber-500/10 border border-amber-500/30'
+              : 'bg-rose-500/10 border border-rose-500/30'
+        }`}>
+          <div className="flex flex-col xs:flex-row items-center gap-2 justify-between">
+            <div className="flex items-center gap-2">
+              {isWinner ? (
+                <div className="flex items-center gap-2 text-green-400">
+                  <Trophy className="h-5 w-5" />
+                  <span className="text-sm xs:text-base">Você venceu!</span>
+                </div>
+              ) : isDraw ? (
+                <div className="flex items-center gap-2 text-amber-400">
+                  <Scale className="h-5 w-5" />
+                  <span className="text-sm xs:text-base">Empate!</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-rose-400">
+                  <Trophy className="h-5 w-5" />
+                  <span className="text-sm xs:text-base">{player2Name} venceu</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex gap-2">
+              {!hasRematchRequest && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className={`text-xs xs:text-sm ${
+                    isWinner 
+                      ? 'bg-green-500/10 border-green-500/30 hover:bg-green-500/20 text-green-400' 
+                      : isDraw 
+                        ? 'bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20 text-amber-400'
+                        : 'bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20 text-rose-400'
+                  }`}
+                  onClick={handleRequestRematch}
+                  disabled={isRequestingRematch}
+                >
+                  {isRequestingRematch ? (
+                    <>
+                      <Loader2 className="h-3 w-3 xs:h-4 xs:w-4 mr-1 animate-spin" />
+                      Aguarde...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
+                      Revanche
+                    </>
+                  )}
+                </Button>
+              )}
+              
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs xs:text-sm bg-slate-500/10 border-slate-500/30 hover:bg-slate-500/20 text-slate-400"
+                onClick={() => router.push('/jogo-da-memoria/online')}
+              >
+                <ArrowLeft className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
+                Voltar
+              </Button>
+            </div>
+          </div>
+          
+          {hasRematchRequest && (
+            <div className={`mt-3 p-2 rounded ${
+              playerRequestedRematch 
+                ? 'bg-blue-500/10 border border-blue-500/30' 
+                : 'bg-green-500/10 border border-green-500/30'
+            }`}>
+              {playerRequestedRematch ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-blue-400 text-sm">
+                    <HourglassIcon className="h-4 w-4 mr-2 animate-pulse" />
+                    Aguardando resposta do adversário...
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20 text-blue-400"
+                    onClick={handleCancelRematch}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-green-400 text-sm">
+                    <AlertCircle className="h-4 w-4 mr-2" />
+                    {player2Name} está pedindo revanche!
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs bg-green-500/10 border-green-500/30 hover:bg-green-500/20 text-green-400"
+                      onClick={handleAcceptRematch}
+                      disabled={isAcceptingRematch}
+                    >
+                      {isAcceptingRematch ? (
+                        <>
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          Aguarde...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-3 w-3 mr-1" />
+                          Aceitar
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20 text-rose-400"
+                      onClick={handleDeclineRematch}
+                    >
+                      <X className="h-3 w-3 mr-1" />
+                      Recusar
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
     }
     
-    if (isCurrentPlayer) {
+    // 3. Jogo em andamento - indicador de vez
+    if (isGamePlaying) {
       return (
-        <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
-          <p className="text-green-300">É a sua vez de jogar! Clique em uma carta para virá-la.</p>
-        </div>
-      );
-    } else {
-      return (
-        <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg text-center">
-          <p className="text-blue-300">Aguarde sua vez. {opponentNickname} está jogando...</p>
+        <div className={`mb-4 md:mb-6 rounded-lg p-2 md:p-4 ${
+          isCurrentPlayer 
+            ? 'bg-blue-500/10 border border-blue-500/30' 
+            : 'bg-amber-500/10 border border-amber-500/30'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {isCurrentPlayer ? (
+                <div className="flex items-center gap-2 text-blue-400">
+                  <Hand className="h-5 w-5" />
+                  <span className="text-sm xs:text-base">Sua vez de jogar</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-amber-400">
+                  <HourglassIcon className="h-5 w-5 animate-pulse" />
+                  <span className="text-sm xs:text-base">Vez de {player2Name}</span>
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs bg-slate-500/10 border-slate-500/30 hover:bg-slate-500/20 text-slate-400"
+                onClick={() => router.push('/jogo-da-memoria/online')}
+              >
+                <ArrowLeft className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
+                Sair
+              </Button>
+            </div>
+          </div>
         </div>
       );
     }
+    
+    // Fallback - não deveria acontecer
+    return null;
   };
   
   // No useEffect para verificar estado do jogo, adicionar verificações
@@ -1819,21 +2022,95 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
     };
   }, [game?.id, supabase]);
 
+  // Função para compartilhar link do jogo
+  const copyGameLink = () => {
+    const gameLink = `${window.location.origin}/jogo-da-memoria/online/${game.id}`;
+    navigator.clipboard.writeText(gameLink)
+      .then(() => {
+        toast.success("Link copiado para a área de transferência!", {
+          id: "copy-link-success",
+          duration: 2000
+        });
+      })
+      .catch(err => {
+        console.error("Falha ao copiar link:", err);
+        toast.error("Falha ao copiar link. Tente novamente.", {
+          id: "copy-link-error",
+          duration: 2000
+        });
+      });
+  };
+
+  // Função para cancelar solicitação de revanche
+  const handleCancelRematch = async () => {
+    try {
+      // Cancelar a solicitação de revanche
+      const response = await fetch(`/api/memory-game/${game.id}/cancel-rematch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          player_id: player?.id
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.error) {
+        console.error('Erro ao cancelar revanche:', result.error);
+        return;
+      }
+      
+      // Atualizar o estado do jogo
+      if (result.data) {
+        setGame(result.data);
+      }
+    } catch (error) {
+      console.error('Erro ao cancelar revanche:', error);
+    }
+  };
+
   return (
-    <div className="w-full flex flex-col items-center">
-      {renderScoreboard()}
-      {renderStatusMessage()}
+    <div className="w-full flex flex-col items-center memory-game-container">
+      {/* Elementos de áudio pré-carregados */}
       
-      <div className="mb-8 w-full flex justify-center">
-        <div className="p-4 sm:p-6 bg-slate-800/50 rounded-xl border border-slate-700 shadow-md">
-          {renderCards()}
-        </div>
-      </div>
+      {/* Cabeçalho com placar */}
+      <motion.div 
+        className="w-full mb-4 scoreboard-container"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {renderScoreboard()}
+      </motion.div>
       
+      {/* Status do jogo e mensagens */}
+      <motion.div
+        className="w-full mb-4 status-message"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
+        {renderStatusMessage()}
+      </motion.div>
+      
+      {/* Área do jogo */}
+      <motion.div 
+        className="w-full mb-6"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        {/* Renderizar cartas do jogo */}
+        {renderCards()}
+      </motion.div>
+      
+      {/* Modais e diálogos */}
       <RematchModal
         isOpen={isRematchModalOpen}
-        isRequesting={isRequestingRematch}
-        isReceiving={isReceivingRematch}
+        isRequesting={!!playerRequestedRematch}
+        isReceiving={!!opponentRequestedRematch}
         opponentNickname={opponentNickname}
         onClose={handleCloseRematchModal}
         onAccept={handleAcceptRematch}
@@ -1841,30 +2118,7 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
         onRequest={handleRequestRematch}
       />
       
-      <ResultModal />
-      
-      <style jsx global>{`
-        .perspective-500 {
-          perspective: 500px;
-        }
-        
-        .preserve-3d {
-          transform-style: preserve-3d;
-        }
-        
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
-        
-        .rotateY-180 {
-          transform: rotateY(180deg);
-        }
-        
-        .card-face.card-front {
-          background-color: #8459b4 !important;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-      `}</style>
+      {isGameFinished && <ResultModal />}
     </div>
   );
 }

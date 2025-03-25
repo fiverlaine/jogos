@@ -14,8 +14,9 @@ export default function MemoryGamePage() {
           alt="Background"
           fill
           className="object-cover object-center opacity-10"
-          unoptimized
           priority
+          quality={75}
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-purple-950/80 to-slate-900/80"></div>
       </div>

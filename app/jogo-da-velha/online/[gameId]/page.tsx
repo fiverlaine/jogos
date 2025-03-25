@@ -6,7 +6,6 @@ import { NicknameModal } from "@/components/online-game/nickname-modal";
 import { usePlayer } from "@/lib/hooks/use-player";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import React from "react";
 
 interface GamePageProps {
   params: {
@@ -15,8 +14,7 @@ interface GamePageProps {
 }
 
 export default function GamePage({ params }: GamePageProps) {
-  const gameIdParam = React.use(Promise.resolve(params));
-  const gameId = React.useMemo(() => gameIdParam.gameId, [gameIdParam]);
+  const { gameId } = params;
   const { player, setPlayerInfo, isLoading } = usePlayer();
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [isReady, setIsReady] = useState(false);

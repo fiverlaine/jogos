@@ -7,7 +7,8 @@ export async function GET(
   { params }: { params: { gameId: string } }
 ) {
   try {
-    const gameId = params.gameId;
+    const resolvedParams = await params;
+    const gameId = resolvedParams.gameId;
 
     if (!gameId) {
       return NextResponse.json(
