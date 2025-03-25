@@ -1,0 +1,88 @@
+/* Estilos consolidados para corrigir a visibilidade dos ícones nas cartas */
+
+/* Garantir que os ícones sejam visíveis apenas quando necessário */
+.card-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important; /* Evitar que o ícone capture eventos de clique */
+  z-index: 10 !important; /* Garantir que o ícone fique acima de outros elementos */
+  position: relative !important;
+  transform: translateZ(2px) !important; /* Ajuste para evitar problemas de renderização */
+}
+
+/* Garantir que os ícones dentro das cartas viradas sejam visíveis */
+[style*="rotateY(180deg)"] .card-icon {
+  opacity: 1 !important;
+  display: flex !important;
+  z-index: 10 !important; /* Garantir que o ícone fique acima de outros elementos */
+}
+
+/* Corrigir problemas de visibilidade em navegadores específicos */
+@supports (-webkit-backface-visibility: hidden) or (backface-visibility: hidden) {
+  .card-icon {
+    transform: translateZ(2px) !important; /* Ajuste para evitar problemas de renderização */
+  }
+  
+  /* Garantir que o container do ícone também seja visível */
+  [style*="rotateY(180deg)"] div {
+    z-index: auto !important;
+  }
+}
+
+/* Corrigir problemas específicos de Safari */
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) {
+    .card-icon {
+      transform: translateZ(5px) !important;
+    }
+  }
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+  .card-icon {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    transform: translateZ(2px) scale(1.1) !important;
+  }
+  
+  .memory-card {
+    perspective: 1000px;
+  }
+}
+
+
+/* Garantir que o container do ícone também seja visível */
+[style*="rotateY(180deg)"] div {
+  z-index: auto !important;
+}
+
+/* Ajustes para o container da carta */
+.memory-card, [style*="transform-style: preserve-3d"] {
+  transform-style: preserve-3d !important;
+  perspective: 1000px !important;
+}
+
+/* Estilo para o verso da carta (face não virada) */
+[style*="transform-style: preserve-3d"] > div:not([style*="rotateY(180deg)"]) {
+  background-image: repeating-linear-gradient(45deg, rgba(168, 85, 247, 0.1) 0px, rgba(168, 85, 247, 0.1) 10px, rgba(139, 92, 246, 0.15) 10px, rgba(139, 92, 246, 0.15) 20px) !important;
+  background-color: #1e293b !important; /* Cor de fundo mais escura para o verso */
+  border: 2px solid rgba(139, 92, 246, 0.3) !important;
+  box-shadow: inset 0 0 15px rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Estilo para a frente da carta (face virada) */
+[style*="rotateY(180deg)"] {
+  background-color: #1e293b !important; /* Fundo limpo para a frente da carta */
+  border: 2px solid rgba(139, 92, 246, 0.5) !important;
+}
+
+/* Garantir que os elementos absolutos dentro da carta estejam posicionados corretamente */
+[style*="transform-style: preserve-3d"] > div {
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}

@@ -1,0 +1,30 @@
+/* Estilos específicos para corrigir a visibilidade dos ícones nas cartas */
+
+/* Garantir que os ícones sejam sempre visíveis */
+.card-icon {
+  opacity: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important; /* Evitar que o ícone capture eventos de clique */
+  z-index: 10 !important; /* Garantir que o ícone fique acima de outros elementos */
+}
+
+/* Garantir que os ícones dentro das cartas viradas sejam visíveis */
+[style*="rotateY(180deg)"] .card-icon {
+  opacity: 1 !important;
+  display: flex !important;
+  z-index: 10 !important; /* Garantir que o ícone fique acima de outros elementos */
+}
+
+/* Corrigir problemas de visibilidade em navegadores específicos */
+@supports (-webkit-backface-visibility: hidden) or (backface-visibility: hidden) {
+  .card-icon {
+    transform: translateZ(1px); /* Pequeno ajuste para evitar problemas de renderização */
+  }
+}
+
+/* Garantir que o container do ícone também seja visível */
+[style*="rotateY(180deg)"] div {
+  z-index: auto !important;
+}

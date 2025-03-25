@@ -1,0 +1,67 @@
+/* Estilos consolidados para corrigir a visibilidade dos ícones nas cartas sem círculos */
+
+/* Garantir que os ícones sejam visíveis apenas quando necessário */
+.card-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important; /* Evitar que o ícone capture eventos de clique */
+  z-index: 10 !important; /* Garantir que o ícone fique acima de outros elementos */
+  position: relative !important;
+  transform: translateZ(2px) !important; /* Ajuste para evitar problemas de renderização */
+}
+
+/* Garantir que os ícones dentro das cartas viradas sejam visíveis */
+[style*="rotateY(180deg)"] .card-icon {
+  opacity: 1 !important;
+  display: flex !important;
+  z-index: 10 !important; /* Garantir que o ícone fique acima de outros elementos */
+}
+
+/* Corrigir problemas de visibilidade em navegadores específicos */
+@supports (-webkit-backface-visibility: hidden) or (backface-visibility: hidden) {
+  .card-icon {
+    transform: translateZ(2px) !important; /* Ajuste para evitar problemas de renderização */
+  }
+  
+  /* Garantir que o container do ícone também seja visível */
+  [style*="rotateY(180deg)"] div {
+    z-index: auto !important;
+  }
+}
+
+/* Corrigir problemas específicos de Safari */
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) {
+    .card-icon {
+      transform: translateZ(5px) !important;
+    }
+  }
+}
+
+/* Remover qualquer fundo circular dos ícones */
+[style*="rotateY(180deg)"] .rounded-full {
+  display: none !important;
+}
+
+/* Ajustes para o container da carta */
+.memory-card, [style*="transform-style: preserve-3d"] {
+  transform-style: preserve-3d !important;
+  perspective: 1000px !important;
+}
+
+/* Garantir que o card-front tenha fundo roxo */
+.card-face.card-front {
+  background-color: #8459b4 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Estilos para as bordas das cartas */
+.ring-2.ring-blue-500, .ring-2.ring-rose-500 {
+  z-index: 5 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+}
+
+.ring-2.ring-rose-500 {
+  box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.5) !important;
+}

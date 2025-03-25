@@ -1,0 +1,75 @@
+.memory-card {
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; /* Safari */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  z-index: 2;
+}
+
+.card-icon {
+  width: 70%;
+  height: 70%;
+  pointer-events: none;
+  animation: appear 0.3s ease-in-out;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.memory-card.flipped .card-icon {
+  animation: none;
+}
+
+/* ✅ Feedback visual para erro */
+/* Removed the rule that was hiding icons without src attribute */
+.card-icon {
+  opacity: 1 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Regras específicas para dispositivos móveis */
+@media (max-width: 768px) {
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden; /* Safari */
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
+  
+  /* Garantir que o círculo decorativo seja sempre mostrado */
+  .card-circle {
+    display: block !important;
+    opacity: 1 !important;
+    pointer-events: none;
+  }
+}
+
+/* Garantir que o transform-style seja aplicado em todos os navegadores */
+.transform-style-3d {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+/* Garantir que backface-visibility funcione em todos os navegadores */
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}

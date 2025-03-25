@@ -1,0 +1,14 @@
+.card {
+  /* ... existing styles ... */
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.revealed {
+  transform: rotateY(180deg);
+}
+
+.matched {
+  transform: rotateY(180deg);
+  opacity: 0.5;
+} 
