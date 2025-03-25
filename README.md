@@ -1,4 +1,5 @@
 # Jogos Clássicos
+# Teste de commit
 
 Uma coleção de jogos clássicos com design moderno e recursos avançados.
 
