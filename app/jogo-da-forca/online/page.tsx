@@ -15,7 +15,7 @@ export default function OnlineLobbyPage() {
   const { player, isLoading, setPlayerInfo } = usePlayer()
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false)
   const [showLobby, setShowLobby] = useState(false)
-  
+
   useEffect(() => {
     // Se o jogador já tem um nickname, mostrar o lobby diretamente
     if (player?.nickname) {
@@ -46,11 +46,11 @@ export default function OnlineLobbyPage() {
         transition={{ duration: 0.5 }}
         className="mb-12 text-center"
       >
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-300 via-purple-400 to-indigo-400 bg-clip-text text-transparent mb-4">
-          Jogo da Memória Online
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-300 via-rose-400 to-red-500 bg-clip-text text-transparent mb-4">
+          Jogo da Forca Online
         </h1>
         <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-          Desafie outros jogadores em tempo real e teste sua memória neste divertido jogo de cartas.
+          Desafie outros jogadores em tempo real e teste suas habilidades de adivinhação neste clássico jogo de palavras.
         </p>
       </motion.div>
       
@@ -63,12 +63,12 @@ export default function OnlineLobbyPage() {
         >
           <div className="rounded-xl border border-slate-700 bg-gradient-to-b from-slate-800/80 via-slate-800/60 to-slate-900/80 backdrop-blur-sm p-8 shadow-xl">
             <div className="flex justify-center mb-6">
-              <div className="bg-gradient-to-br from-purple-500 to-indigo-500 p-4 rounded-full shadow-lg shadow-purple-500/20">
+              <div className="bg-gradient-to-br from-rose-500 to-red-500 p-4 rounded-full shadow-lg shadow-rose-500/20">
                 <Globe className="h-12 w-12 text-white" />
               </div>
             </div>
             
-            <h2 className="text-2xl font-bold text-center mb-3 bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">Bem-vindo ao Jogo Online</h2>
+            <h2 className="text-2xl font-bold text-center mb-3 bg-gradient-to-r from-rose-400 to-red-400 bg-clip-text text-transparent">Bem-vindo ao Jogo Online</h2>
             <p className="mb-8 text-center text-slate-300">
               Para jogar online, escolha um apelido para identificá-lo durante o jogo.
             </p>
@@ -76,7 +76,7 @@ export default function OnlineLobbyPage() {
             <Button 
               size="lg" 
               onClick={() => setIsNicknameModalOpen(true)}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-6 rounded-xl shadow-lg shadow-purple-600/20 transition-all hover:shadow-purple-600/30 hover:-translate-y-1"
+              className="w-full bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 text-white font-medium py-6 rounded-xl shadow-lg shadow-rose-600/20 transition-all hover:shadow-rose-600/30 hover:-translate-y-1"
             >
               <Users className="mr-2 h-5 w-5" />
               Escolher Apelido
@@ -88,7 +88,7 @@ export default function OnlineLobbyPage() {
                 variant="ghost"
                 className="text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
               >
-                <Link href="/jogo-da-memoria">
+                <Link href="/jogo-da-forca">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Voltar para o menu principal
                 </Link>
@@ -105,8 +105,8 @@ export default function OnlineLobbyPage() {
                 transition={{ delay: 0.3 }}
                 className="rounded-xl border border-slate-700 bg-gradient-to-b from-slate-800/70 to-slate-900/70 p-5 text-center shadow-lg"
               >
-                <div className="bg-purple-500/10 rounded-full p-3 w-14 h-14 flex items-center justify-center mx-auto mb-3">
-                  <Globe className="h-6 w-6 text-purple-400" />
+                <div className="bg-rose-500/10 rounded-full p-3 w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                  <Globe className="h-6 w-6 text-rose-400" />
                 </div>
                 <h3 className="font-medium text-slate-200 mb-1">Jogue Online</h3>
                 <p className="text-sm text-slate-400">Desafie jogadores reais em partidas online</p>
@@ -118,8 +118,8 @@ export default function OnlineLobbyPage() {
                 transition={{ delay: 0.4 }}
                 className="rounded-xl border border-slate-700 bg-gradient-to-b from-slate-800/70 to-slate-900/70 p-5 text-center shadow-lg"
               >
-                <div className="bg-indigo-500/10 rounded-full p-3 w-14 h-14 flex items-center justify-center mx-auto mb-3">
-                  <Zap className="h-6 w-6 text-indigo-400" />
+                <div className="bg-red-500/10 rounded-full p-3 w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                  <Zap className="h-6 w-6 text-red-400" />
                 </div>
                 <h3 className="font-medium text-slate-200 mb-1">Tempo Real</h3>
                 <p className="text-sm text-slate-400">Atualizações em tempo real durante o jogo</p>
@@ -131,8 +131,8 @@ export default function OnlineLobbyPage() {
                 transition={{ delay: 0.5 }}
                 className="rounded-xl border border-slate-700 bg-gradient-to-b from-slate-800/70 to-slate-900/70 p-5 text-center shadow-lg"
               >
-                <div className="bg-violet-500/10 rounded-full p-3 w-14 h-14 flex items-center justify-center mx-auto mb-3">
-                  <Shield className="h-6 w-6 text-violet-400" />
+                <div className="bg-orange-500/10 rounded-full p-3 w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                  <Shield className="h-6 w-6 text-orange-400" />
                 </div>
                 <h3 className="font-medium text-slate-200 mb-1">Sem Cadastro</h3>
                 <p className="text-sm text-slate-400">Jogue imediatamente sem necessidade de cadastro</p>
@@ -152,12 +152,12 @@ export default function OnlineLobbyPage() {
           </motion.div>
         </motion.div>
       ) : showLobby ? (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <GameLobby playerNickname={player.nickname} playerId={player.id} gameType="memory" />
+          <GameLobby playerNickname={player.nickname} playerId={player.id} gameType="hangman" />
         </motion.div>
       ) : (
         <div className="max-w-md mx-auto text-center">
@@ -167,7 +167,7 @@ export default function OnlineLobbyPage() {
           <Button 
             size="lg" 
             onClick={() => setShowLobby(true)}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+            className="w-full bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700"
           >
             Entrar no Lobby
           </Button>
@@ -178,7 +178,7 @@ export default function OnlineLobbyPage() {
         isOpen={isNicknameModalOpen}
         onClose={() => setIsNicknameModalOpen(false)}
         onSubmit={handleSetNickname}
-        gameType="memory"
+        gameType="hangman"
       />
     </div>
   );
