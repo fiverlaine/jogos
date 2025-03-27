@@ -1418,10 +1418,10 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
                 size="sm"
                 variant="outline"
                 className="text-xs xs:text-sm bg-slate-500/10 border-slate-500/30 hover:bg-slate-500/20 text-slate-400"
-                onClick={() => router.push('/jogo-da-memoria/online')}
+                onClick={() => router.push('/')}
               >
                 <ArrowLeft className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
-                Voltar
+                Voltar ao Menu Principal
               </Button>
             </div>
           </div>
@@ -1519,10 +1519,10 @@ export function OnlineMemoryGame({ initialGame, onGameUpdate }: OnlineMemoryGame
                 size="sm"
                 variant="outline"
                 className="text-xs bg-slate-500/10 border-slate-500/30 hover:bg-slate-500/20 text-slate-400"
-                onClick={() => router.push('/jogo-da-memoria/online')}
+                onClick={() => router.push('/')}
               >
                 <ArrowLeft className="h-3 w-3 xs:h-4 xs:w-4 mr-1" />
-                Sair
+                Voltar ao Menu Principal
               </Button>
             </div>
           </div>

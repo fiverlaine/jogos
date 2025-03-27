@@ -88,7 +88,7 @@ export default function OnlineLobbyPage() {
                 variant="ghost"
                 className="text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
               >
-                <Link href="/jogo-da-memoria">
+                <Link href="/">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Voltar para o menu principal
                 </Link>

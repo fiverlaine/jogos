@@ -97,6 +97,16 @@ export interface Player {
   nickname: string;
 }
 
+export interface HangmanGameState {
+  palavra: string;
+  letrasAdivinhadas: string[];
+  erros: number;
+  status: "jogando" | "venceu" | "perdeu";
+  jogadorAtual: string;
+  vencedor: string | null;
+  dica: string;
+}
+
 export interface GameSession {
   id: string;
   created_at: string;
@@ -272,8 +282,8 @@ export async function joinGameSession(gameId: string, player: Player): Promise<b
     
     // Verificar se o jogador já é o jogador X
     if (game.player_x_id === player.id) {
-      console.error(`Jogador ${player.id} já é o jogador X neste jogo`);
-      return false;
+      console.log(`Jogador ${player.id} já é o jogador X neste jogo, permitindo continuar`);
+      return true; // Retornar true para permitir que o jogador continue no jogo
     }
     
     const { error } = await supabase

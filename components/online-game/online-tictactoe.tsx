@@ -818,10 +818,10 @@ export function OnlineTicTacToe({ gameId, player }: OnlineTicTacToeProps) {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => router.push('/jogo-da-velha/online')}
+                onClick={() => router.push('/')}
                 className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white w-full sm:w-auto"
               >
-                Voltar ao Lobby
+                Voltar para o Menu Principal
               </Button>
             </motion.div>
           </motion.div>
@@ -845,7 +845,7 @@ export function OnlineTicTacToe({ gameId, player }: OnlineTicTacToeProps) {
         <h2 className="text-2xl font-bold text-destructive mb-4">Erro</h2>
         <p className="text-muted-foreground mb-6">{error}</p>
         <Button asChild>
-          <Link href="/jogo-da-velha/online">Voltar para o Lobby</Link>
+          <Link href="/">Voltar para o Menu Principal</Link>
         </Button>
       </div>
     );
@@ -857,7 +857,7 @@ export function OnlineTicTacToe({ gameId, player }: OnlineTicTacToeProps) {
         <h2 className="text-2xl font-bold text-destructive mb-4">Jogo não encontrado</h2>
         <p className="text-muted-foreground mb-6">O jogo solicitado não existe ou foi removido.</p>
         <Button asChild>
-          <Link href="/jogo-da-velha/online">Voltar para o Lobby</Link>
+          <Link href="/">Voltar para o Menu Principal</Link>
         </Button>
       </div>
     );
@@ -999,9 +999,9 @@ export function OnlineTicTacToe({ gameId, player }: OnlineTicTacToeProps) {
             asChild
             variant="outline"
           >
-            <Link href="/jogo-da-velha/online">
+            <Link href="/">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar para o Lobby
+              Voltar para o Menu Principal
             </Link>
           </Button>
           

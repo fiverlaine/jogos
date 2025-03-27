@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { createGameSession, getAvailableGames, GameSession, Player, createMemoryGame, getAvailableMemoryGames, MemoryGameSession } from "@/lib/supabase";
+import { createHangmanGameSession, getAvailableHangmanGames, HangmanGameSession } from "@/lib/hangman-supabase";
 import { Loader2, RefreshCw, Plus, Users, Clock, Trophy, UserCheck, ArrowLeft, Home, Grid, Dices } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -22,12 +23,12 @@ import {
 interface GameLobbyProps {
   playerNickname: string;
   playerId: string;
-  gameType?: "tictactoe" | "memory";
+  gameType?: "tictactoe" | "memory" | "hangman";
 }
 
 export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: GameLobbyProps) {
   const router = useRouter();
-  const [availableGames, setAvailableGames] = useState<GameSession[] | MemoryGameSession[]>([]);
+  const [availableGames, setAvailableGames] = useState<GameSession[] | MemoryGameSession[] | HangmanGameSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingGame, setIsCreatingGame] = useState(false);
   const [isJoiningGame, setIsJoiningGame] = useState(false);
@@ -49,7 +50,12 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
       try {
         setIsLoading(true);
         if (gameType === "tictactoe") {
+          // Jogo da velha usa a API padrão de jogos
           const games = await getAvailableGames();
+          setAvailableGames(games || []);
+        } else if (gameType === "hangman") {
+          // Jogo da forca usa sua própria API específica
+          const games = await getAvailableHangmanGames();
           setAvailableGames(games || []);
         } else if (gameType === "memory") {
           const games = await getAvailableMemoryGames();
@@ -81,13 +87,13 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
       setIsCreatingGame(true);
       console.log("Criando jogo com jogador:", playerNickname, playerId);
       
+      // Criar um objeto Player para passar para a função createGameSession
+      const player: Player = {
+        id: playerId,
+        nickname: playerNickname
+      };
+      
       if (gameType === "tictactoe") {
-        // Criar um objeto Player para passar para a função createGameSession
-        const player: Player = {
-          id: playerId,
-          nickname: playerNickname
-        };
-        
         const game = await createGameSession(player);
 
         if (game) {
@@ -102,6 +108,16 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
         if (game) {
           toast.success("Jogo criado com sucesso!");
           router.push(`/jogo-da-memoria/online/${game.id}`);
+        } else {
+          toast.error("Não foi possível criar um novo jogo");
+        }
+      } else if (gameType === "hangman") {
+        // Para o jogo da forca, usamos a API específica do jogo da forca
+        const game = await createHangmanGameSession(player);
+        
+        if (game) {
+          toast.success("Jogo criado com sucesso!");
+          router.push(`/jogo-da-forca/online/${game.id}`);
         } else {
           toast.error("Não foi possível criar um novo jogo");
         }
@@ -143,6 +159,27 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
         // Para o jogo da memória, apenas navegamos para a página do jogo
         toast.success(`Entrando no jogo de ${hostNickname}`);
         router.push(`/jogo-da-memoria/online/${gameId}`);
+      } else if (gameType === "hangman") {
+        // Para o jogo da forca, usamos a API específica
+        const response = await fetch(`/api/hangman/${gameId}/join`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            player_id: playerId,
+            player_nickname: playerNickname
+          }),
+        });
+        
+        if (response.ok) {
+          toast.success(`Entrando no jogo de ${hostNickname}`);
+          router.push(`/jogo-da-forca/online/${gameId}`);
+        } else {
+          toast.error("Não foi possível entrar no jogo");
+          // Atualizar a lista de jogos
+          setRefreshKey(prev => prev + 1);
+        }
       }
     } catch (error) {
       console.error("Erro ao entrar no jogo:", error);
@@ -173,26 +210,49 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
 
   // Função para determinar o caminho de retorno correto com base no tipo de jogo
   const getReturnPath = () => {
-    return gameType === "tictactoe" ? "/jogo-da-velha" : "/jogo-da-memoria";
+    // Retornar para a página inicial
+    return "/";
   };
 
   // Função para determinar as cores de gradiente baseadas no tipo de jogo
   const getGradientColors = () => {
-    return gameType === "tictactoe" 
-      ? "from-cyan-300 via-blue-400 to-purple-400" 
-      : "from-purple-300 via-purple-400 to-indigo-400";
+    if (gameType === "tictactoe") return "from-cyan-300 via-blue-400 to-purple-400";
+    if (gameType === "memory") return "from-purple-300 via-purple-400 to-indigo-400";
+    if (gameType === "hangman") return "from-red-300 via-rose-400 to-red-500";
+    return "from-cyan-300 via-blue-400 to-purple-400";
   };
 
   // Função para determinar o botão de cores baseadas no tipo de jogo
   const getButtonGradient = () => {
-    return gameType === "tictactoe"
-      ? "from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
-      : "from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700";
+    if (gameType === "tictactoe") return "from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700";
+    if (gameType === "memory") return "from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700";
+    if (gameType === "hangman") return "from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700";
+    return "from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700";
   };
 
   // Função para determinar a cor do texto baseada no tipo de jogo
   const getAccentColor = () => {
-    return gameType === "tictactoe" ? "text-blue-400" : "text-purple-400";
+    if (gameType === "tictactoe") return "text-blue-400";
+    if (gameType === "memory") return "text-purple-400";
+    if (gameType === "hangman") return "text-rose-400";
+    return "text-blue-400";
+  };
+
+  // Determinar as informações do jogo com base no tipo
+  const useGameSession = gameType === "tictactoe";
+  const useHangmanSession = gameType === "hangman";
+  const isMemoryGame = gameType === "memory";
+  
+  const getHostNickname = (game: GameSession | MemoryGameSession | HangmanGameSession) => {
+    if (useGameSession) return (game as GameSession).player_x_nickname;
+    if (useHangmanSession) return (game as HangmanGameSession).player_1_nickname;
+    return (game as MemoryGameSession).player_1_nickname;
+  };
+
+  const getHostId = (game: GameSession | MemoryGameSession | HangmanGameSession) => {
+    if (useGameSession) return (game as GameSession).player_x_id;
+    if (useHangmanSession) return (game as HangmanGameSession).player_1_id;
+    return (game as MemoryGameSession).player_1_id;
   };
 
   return (
@@ -326,19 +386,8 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <AnimatePresence>
                 {availableGames.map((game, index) => {
-                  // Determinar as informações do jogo com base no tipo
-                  const isTicTacToe = gameType === "tictactoe";
-                  const gameInfo = isTicTacToe 
-                    ? game as GameSession
-                    : game as MemoryGameSession;
-                  
-                  const hostNickname = isTicTacToe 
-                    ? (gameInfo as GameSession).player_x_nickname 
-                    : (gameInfo as MemoryGameSession).player_1_nickname;
-                  
-                  const hostId = isTicTacToe 
-                    ? (gameInfo as GameSession).player_x_id 
-                    : (gameInfo as MemoryGameSession).player_1_id;
+                  const hostNickname = getHostNickname(game);
+                  const hostId = getHostId(game);
                   
                   return (
                     <motion.div
@@ -357,9 +406,9 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
                               </Badge>
                               <CardTitle className="text-lg">Jogo de {hostNickname}</CardTitle>
                             </div>
-                            {gameType === "memory" && (gameInfo as MemoryGameSession).grid_config && (
+                            {isMemoryGame && (game as MemoryGameSession).grid_config && (
                               <div className="text-sm text-purple-300 bg-purple-900/30 px-3 py-1 rounded-full">
-                                {(gameInfo as MemoryGameSession).grid_config.rows}x{(gameInfo as MemoryGameSession).grid_config.cols}
+                                {(game as MemoryGameSession).grid_config.rows}x{(game as MemoryGameSession).grid_config.cols}
                               </div>
                             )}
                           </div>
@@ -369,10 +418,16 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
                             <Clock className="h-4 w-4" />
                             <span>Criado {formatTimestamp(game.created_at)}</span>
                           </div>
-                          {isTicTacToe && (
+                          {useGameSession && (
                             <div className="flex items-center gap-2 text-sm text-slate-400">
                               <Trophy className="h-4 w-4" />
-                              <span>Primeiro a jogar: {(gameInfo as GameSession).player_x_nickname}</span>
+                              <span>Primeiro a jogar: {hostNickname}</span>
+                            </div>
+                          )}
+                          {useHangmanSession && (
+                            <div className="flex items-center gap-2 text-sm text-slate-400">
+                              <Trophy className="h-4 w-4" />
+                              <span>Criador da sala: {hostNickname}</span>
                             </div>
                           )}
                         </CardContent>
@@ -422,7 +477,7 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
             variant="outline"
             className="w-full border-slate-700 hover:bg-slate-800 hover:text-white"
           >
-            <Link href={getReturnPath()}>
+            <Link href="/">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Voltar ao Menu Principal
             </Link>
@@ -523,4 +578,4 @@ export function GameLobby({ playerNickname, playerId, gameType = "tictactoe" }: 
       </Dialog>
     </div>
   );
-} 
+}
